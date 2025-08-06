@@ -1,62 +1,87 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import { Link } from "react-router-dom";
 
-interface Brand {
-  id: number;
+type BrandWithScores = {
+  id: string;
   name: string;
   logo_url: string;
-  sustainability_score: number;
-}
+  sustainability_scores?: {
+    score_overall: number;
+    score_environment: number;
+    score_labor: number;
+    score_animals: number;
+  }[];
+};
 
-const BrandList: React.FC = () => {
-  const [brands, setBrands] = useState<Brand[]>([]);
+export const BrandList = () => {
+  const [brands, setBrands] = useState<BrandWithScores[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBrands = async () => {
-      const { data, error } = await supabase.from('brands').select('*');
-      if (error) console.error('Error fetching brands:', error);
-      else setBrands(data as Brand[]);
-    };
+    async function fetchBrands() {
+      const { data, error } = await supabase
+        .from("brands")
+        .select(`
+          id,
+          name,
+          logo_url,
+          sustainability_scores (
+            score_overall,
+            score_environment,
+            score_labor,
+            score_animals
+          )
+        `);
+
+      if (error) {
+        console.error("Error fetching brands:", error.message);
+      } else {
+        setBrands(data || []);
+      }
+
+      setLoading(false);
+    }
+
     fetchBrands();
   }, []);
 
+  if (loading) {
+    return <p className="text-center py-10 text-gray-500">Loading brands...</p>;
+  }
+
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-10 text-center text-gray-800">Sustainable Brands</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {brands.map((brand) => (
-            <div
+    <main className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-center">Sustainable Brands</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {brands.map((brand) => {
+          const score = brand.sustainability_scores?.[0];
+          return (
+            <Link
               key={brand.id}
-              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300"
+              to={`/brands/${brand.id}`}
+              className="border rounded-lg shadow-sm p-4 flex flex-col items-center text-center space-y-2 bg-white hover:shadow-md transition"
             >
               <img
                 src={brand.logo_url}
                 alt={`${brand.name} logo`}
-                className="h-20 object-contain mx-auto mb-4"
-                onError={(e) =>
-                  ((e.target as HTMLImageElement).src = '/fallback-logo.png')
-                }
+                className="w-24 h-24 object-contain mb-2"
               />
-              <h2 className="text-xl font-semibold mb-2 text-gray-900">{brand.name}</h2>
-              <div className="text-sm text-gray-600 mb-1">Sustainability Score</div>
-              <div
-                className={`inline-block px-3 py-1 rounded-full font-bold text-white ${
-                  brand.sustainability_score >= 80
-                    ? 'bg-green-600'
-                    : brand.sustainability_score >= 60
-                    ? 'bg-yellow-500'
-                    : 'bg-red-500'
-                }`}
-              >
-                {brand.sustainability_score}/100
-              </div>
-            </div>
-          ))}
-        </div>
+              <h2 className="text-xl font-semibold">{brand.name}</h2>
+              {score ? (
+                <div className="text-sm text-gray-600">
+                  <p>🌍 Environment: {score.score_environment}</p>
+                  <p>👷 Labor: {score.score_labor}</p>
+                  <p>🐑 Animals: {score.score_animals}</p>
+                  <p className="font-bold text-green-700 mt-1">Overall: {score.score_overall}</p>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 italic">No scores available</p>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </main>
   );
 };
-
-export default BrandList;
