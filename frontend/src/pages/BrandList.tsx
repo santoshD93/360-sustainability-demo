@@ -1,51 +1,62 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 interface Brand {
   id: number;
   name: string;
-  description: string;
   logo_url: string;
+  sustainability_score: number;
 }
 
-export const BrandList = () => {
+const BrandList: React.FC = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBrands = async () => {
       const { data, error } = await supabase.from('brands').select('*');
-      if (error) {
-        console.error('Error fetching brands:', error.message);
-      } else {
-        setBrands(data);
-      }
-      setLoading(false);
+      if (error) console.error('Error fetching brands:', error);
+      else setBrands(data as Brand[]);
     };
     fetchBrands();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-
   return (
-    <main className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Sustainable Brands</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {brands.map((brand) => (
-          <div
-            key={brand.id}
-            className="bg-white shadow-md rounded-lg p-6 border border-gray-200"
-          >
-            <img
-              src={brand.logo_url}
-              alt={`${brand.name} logo`}
-              className="h-16 mb-4 object-contain"
-            />
-            <h2 className="text-xl font-semibold">{brand.name}</h2>
-            <p className="text-gray-600 mt-2">{brand.description}</p>
-          </div>
-        ))}
+    <main className="min-h-screen bg-gray-50 py-12 px-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold mb-10 text-center text-gray-800">Sustainable Brands</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {brands.map((brand) => (
+            <div
+              key={brand.id}
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300"
+            >
+              <img
+                src={brand.logo_url}
+                alt={`${brand.name} logo`}
+                className="h-20 object-contain mx-auto mb-4"
+                onError={(e) =>
+                  ((e.target as HTMLImageElement).src = '/fallback-logo.png')
+                }
+              />
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">{brand.name}</h2>
+              <div className="text-sm text-gray-600 mb-1">Sustainability Score</div>
+              <div
+                className={`inline-block px-3 py-1 rounded-full font-bold text-white ${
+                  brand.sustainability_score >= 80
+                    ? 'bg-green-600'
+                    : brand.sustainability_score >= 60
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
+                }`}
+              >
+                {brand.sustainability_score}/100
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );
 };
+
+export default BrandList;
