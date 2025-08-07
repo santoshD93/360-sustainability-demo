@@ -1,13 +1,13 @@
 {
     "functions": {
-      "frontend/api/analyze.ts": {
+      "api/analyze.ts": {
         "runtime": "vercel-node@latest"
       }
     },
     "routes": [
       {
         "src": "/api/analyze",
-        "dest": "frontend/api/analyze.ts"
+        "dest": "api/analyze.ts"
       }
     ]
   }
