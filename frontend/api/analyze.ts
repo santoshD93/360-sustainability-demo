@@ -46,6 +46,10 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ result });
   } catch (err) {
     console.error("🔥 OpenAI error:", err);
-    return res.status(500).json({ error: "AI analysis failed" });
+
+    return res.status(500).json({
+      error: "AI analysis failed",
+      details: err.message ?? String(err),
+    });
   }
 };
