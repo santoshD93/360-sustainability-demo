@@ -1,10 +1,10 @@
 export async function analyzeClaim(claim: string): Promise<string> {
-  const response = await fetch("https://mainteny-openai-api.vercel.app/api/analyze", {
+  const response = await fetch("/api/analyze", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ claim })
+    body: JSON.stringify({ claim }),
   });
 
   if (!response.ok) {
