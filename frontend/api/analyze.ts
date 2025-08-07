@@ -1,10 +1,15 @@
-const OpenAI = require("openai");
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import OpenAI from 'openai';
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("❌ OPENAI_API_KEY is missing from environment variables");
+}
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY!,
 });
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -19,7 +24,7 @@ module.exports = async function handler(req, res) {
   const claim = req.body?.claim;
 
   if (!claim) {
-    return res.status(400).json({ error: "No claim provided" });
+    return res.status(400).json({ error: "Missing claim in request body" });
   }
 
   try {
@@ -28,7 +33,8 @@ module.exports = async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are a sustainability compliance analyst. Analyze the provided sustainability claim and provide feedback.",
+          content:
+            "You are a sustainability compliance analyst. Analyze the provided sustainability claim and provide feedback.",
         },
         {
           role: "user",
@@ -44,12 +50,11 @@ module.exports = async function handler(req, res) {
     }
 
     return res.status(200).json({ result });
-  } catch (err) {
+  } catch (err: any) {
     console.error("🔥 OpenAI error:", err);
-
     return res.status(500).json({
       error: "AI analysis failed",
       details: err.message ?? String(err),
     });
   }
-};
+}
