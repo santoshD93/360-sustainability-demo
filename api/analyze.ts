@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const chat = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: "You are a sustainability compliance analyst. Analyze the provided sustainability claim and provide feedback." },
         { role: "user", content: claim },
