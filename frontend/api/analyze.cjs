@@ -1,11 +1,11 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
-import OpenAI from "openai";
+const { VercelRequest, VercelResponse } = require('@vercel/node');
+const OpenAI = require('openai');
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Set this in Vercel dashboard
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { claim } = req.body;
+  const claim = req.body?.claim;
 
   if (!claim) {
     return res.status(400).json({ error: "No claim provided" });
@@ -29,22 +29,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       messages: [
         {
           role: "system",
-          content:
-            "You are a sustainability compliance analyst. Analyze the provided sustainability claim and provide detailed, structured feedback in bullet points.",
+          content: "You are a sustainability compliance analyst. Analyze the provided sustainability claim and provide feedback.",
         },
-        { role: "user", content: claim },
+        {
+          role: "user",
+          content: claim,
+        },
       ],
     });
 
-    const result = chat.choices[0]?.message?.content;
+    const result = chat.choices?.[0]?.message?.content;
 
     if (!result) {
-      throw new Error("No result returned from OpenAI");
+      throw new Error("No result from OpenAI");
     }
 
     return res.status(200).json({ result });
-  } catch (error) {
-    console.error("OpenAI error:", error);
+  } catch (err) {
+    console.error("🔥 OpenAI error:", err);
     return res.status(500).json({ error: "AI analysis failed" });
   }
-}
+};
