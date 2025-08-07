@@ -1,14 +1,13 @@
 {
-    "functions": {
-      "api/analyze.ts": {
-        "runtime": "vercel-node@latest"
-      }
-    },
-    "routes": [
-      {
-        "src": "/api/analyze",
-        "dest": "api/analyze.ts"
-      }
-    ]
-  }
-  
+  "functions": {
+    "api/analyze.ts": {
+      "runtime": "vercel-node@latest"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/analyze",
+      "dest": "api/analyze.ts"
+    }
+  ]
+}
