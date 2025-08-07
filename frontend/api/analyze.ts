@@ -1,10 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("❌ OPENAI_API_KEY is missing from environment variables");
-}
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
@@ -50,11 +46,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     return res.status(200).json({ result });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("🔥 OpenAI error:", err);
     return res.status(500).json({
       error: "AI analysis failed",
-      details: err.message ?? String(err),
+      details: err instanceof Error ? err.message : String(err),
     });
   }
 }
