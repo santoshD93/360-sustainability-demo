@@ -1,22 +1,9 @@
 {
   "name": "360-sustainability-demo",
   "version": "1.0.0",
-  "description": "[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org/) [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/) [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "cd frontend && npm install && npm run build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/santoshD93/360-sustainability-demo.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/santoshD93/360-sustainability-demo/issues"
-  },
-  "homepage": "https://github.com/santoshD93/360-sustainability-demo#readme",
   "dependencies": {
     "@types/node": "^24.2.0",
     "@vercel/node": "^5.3.11",
